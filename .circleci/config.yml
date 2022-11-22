@@ -76,5 +76,5 @@ workflows:
     jobs:
       - lint_check
       - build_dockerapplication:
-          requires: [lint_check
+          requires: [lint_check]
       
