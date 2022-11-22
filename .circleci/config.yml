@@ -75,6 +75,6 @@ workflows:
   default:
     jobs:
       - lint_check
-      - build_dockerapplication:
+      - build_docker_app:
           requires: [lint_check]
       
