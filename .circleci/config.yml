@@ -56,7 +56,7 @@ jobs:
       - run:
           name: Build Docker Image
           command: |
-            docker build -t $IMAGE_NAME:$IMAGE_VERSION .
+            docker build -t capstone_image:$IMAGE_VERSION .
       - run:
           name: List Docker Image
           command: |
@@ -65,7 +65,7 @@ jobs:
           name: Push Docker Image
           command: |
             docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PASS"
-            dockerpath=$IMAGE_NAME:$IMAGE_VERSION
+            dockerpath=capstone_image:$IMAGE_VERSION
             echo "$dockerpath"
             docker push $dockerpath
             
