@@ -41,4 +41,9 @@ jobs:
           command: |
             . devops/bin/activate
             make lint
+  workflows:
+  version:  2.1
+  default:
+    jobs:
+      - lint_check
       
