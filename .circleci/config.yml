@@ -43,7 +43,7 @@ jobs:
             make lint      
   build_docker_image:
     environment:
-      IMAGE_VERSION: v1
+      IMAGE_VERSION: v2
     docker:
       - image: circleci/golang:1.15
     steps:
