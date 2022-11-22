@@ -41,9 +41,40 @@ jobs:
           command: |
             . devops/bin/activate
             make lint
-  workflows:
-  version:  2.1
+  # building the docker app
+  build_docker_app:
+    environment:
+      IMAGE_VERSION:  v1
+    docker:
+      - image: circleci/golang:1.15
+     
+    steps:
+      - checkout
+      - setup_remote_docker
+
+      # Build the image and push Docker image
+      - run:
+          name: Build Docker Image
+          command: |
+            docker build -t $IMAGE_NAME:$IMAGE_VERSION .
+      - run:
+          name: List Docker Image
+          command: |
+            docker image ls
+      - run:
+          name: Push Docker Image
+          command: |
+            docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PASS"
+            dockerpath=$IMAGE_NAME:$IMAGE_VERSION
+            docker push $dockerpath
+            
+            
+            
+workflows:
+  version:  2
   default:
     jobs:
       - lint_check
+      - build_dockerapplication:
+          requires: [lint_check
       
