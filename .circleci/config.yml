@@ -67,7 +67,7 @@ jobs:
             docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PASS"
             dockerpath=capstone_image:$IMAGE_VERSION
             echo "$dockerpath"
-            docker push $dockerpath
+            docker push $dockerpath:capstonepath
             
             
             
