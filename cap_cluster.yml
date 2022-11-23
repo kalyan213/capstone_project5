@@ -1,0 +1,25 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: hello
+  region: us-east-1
+iam:
+  withOIDC: true
+nodeGroups:
+  - name: ng-1
+    instanceType: t2.micro
+    amiFamily: AmazonLinux2
+    # desiredCapacity: 2
+    minSize: 1
+    maxSize: 2
+    volumeSize: 80
+    ssh:
+      allow: true
+      publicKeyName: key-pair-us-east-1
+vpc:
+  subnets:
+    private:
+      us-east-1a: { id: subnet-018c08ff21bde1a40 }
+      us-east-1b: { id: subnet-086af0d30df995f5c }
+      us-east-1c: { id: subnet-081c4f2bce65cd16d }

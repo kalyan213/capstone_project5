@@ -126,17 +126,27 @@ jobs:
       - run:
           name: Creating an EKS cluster.
           command: |
-            aws cloudformation list-exports > cluster.txt
-            cat cluster.txt
-            if [ $(grep -i "$EKSCLUSTER_NAME" cluster.txt | wc -l) -ge 1 ]
-              then
-              echo "already EKS Cluster exists in environment"
-              echo "deleting the EKS cluster..."
-              aws eks list-clusters
-              else
-              echo "creating the EKS Cluster"
-              eksctl create cluster --name $EKS_CLUSTER_NAME --version 1.19 --region $AWS_DEFAULT_REGION --zones us-east-1a,us-east-1b,us-east-1c --nodegroup-name eks_capstone_grp --node-type t2.micro --nodes-min 2 --nodes-max 4 --managed
-              aws eks list-clusters            
+            # aws cloudformation list-exports > cluster.txt
+            # cat cluster.txt
+            # if [ $(grep -i "$EKSCLUSTER_NAME" cluster.txt | wc -l) -ge 1 ]
+            #   then
+            #   echo "already EKS Cluster exists in environment"
+            #   echo "deleting the EKS cluster..."
+            #   aws eks list-clusters
+            # #   else
+            #   echo "creating the EKS Cluster"
+            #   eksctl create cluster --name $EKS_CLUSTER_NAME --version 1.20 --region $AWS_DEFAULT_REGION --zones us-east-1a,us-east-1b,us-east-1c --nodegroup-name eks_capstone_grp --node-type t2.micro --nodes-min 2 --nodes-max 4 --managed
+            #   aws eks list-clusters            
+            # fi
+            if kubectl config get-clusters | grep -q ${EKS_CLUSTER_NAME}; then
+                echo
+                echo "Cluster '${EKS_CLUSTER_NAME}' already exists!"
+                echo
+            else
+                echo
+                echo "Creating cluster..."
+                
+                /usr/local/bin/eksctl create cluster --config-file=cap_cluster.yml
             fi
 
             
