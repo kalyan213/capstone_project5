@@ -103,30 +103,27 @@ jobs:
       - run:
           name: Install eksctl
           command: |
+            # curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+            # mv /tmp/eksctl /usr/local/bin
             curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
-            mv /tmp/eksctl /usr/local/bin
+            sudo mv /tmp/eksctl /usr/local/bin
+            eksctl version
+
 
       - run:
           name: Install kubectl
           command: |
-            curl -o kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.13.7/2019-06-11/bin/linux/amd64/kubectl
+            # curl -o kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.13.7/2019-06-11/bin/linux/amd64/kubectl
+            # chmod +x ./kubectl
+            # mv ./kubectl /usr/local/bin/kubectl
+            curl -o kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.24.7/2022-10-31/bin/linux/amd64/kubectl
+            curl -o kubectl.sha256 https://s3.us-west-2.amazonaws.com/amazon-eks/1.24.7/2022-10-31/bin/linux/amd64/kubectl.sha256
+            openssl sha1 -sha256 kubectl
             chmod +x ./kubectl
-            mv ./kubectl /usr/local/bin/kubectl
+            mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
+            echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
+            kubectl version --short --client
 
-      - run:
-          name: Create a EKS cluster
-          command: |
-            aws cloudformation list-exports > cluster.txt
-            cat cluster.txt
-            if [ $(grep -i "eksctl-udaproject5" cluster.txt | wc -l) -ge 1 ]
-              then
-              echo "already EKS Cluster exists in environment"
-              else
-              echo "creating the EKS Cluster"
-              eksctl create cluster --name $EKSCLUSTER_NAME --version 1.19 --region $AWS_DEFAULT_REGION --zones us-east-1a,us-east-1b,us-east-1c --nodegroup-name eksudanodegrp --node-type t2.micro --nodes-min 2 --nodes-max 4 --managed
-            fi
-
-    
             
 workflows:
   # version:   2.1
