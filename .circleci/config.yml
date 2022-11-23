@@ -57,7 +57,9 @@ jobs:
           name: Build Docker Image
           command: |
             docker system prune -af
+            sleep 5
             docker build -t hello:v1 .
+            sleep 5
       - run:
           name: List Docker Image
           command: |
@@ -68,7 +70,7 @@ jobs:
             docker images
             sudo docker logout
             docker images
-            sudo docker login -u kalyan212 -p Guna@123Guna@123 docker.io
+            docker login -u kalyan212 -p Guna@123Guna@123 docker.io
             image_ids=`docker images | grep hello | awk '{print $3}'`
             echo $image_ids
             docker images
