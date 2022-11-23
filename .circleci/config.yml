@@ -111,10 +111,12 @@ eks_cluster_deploy:
     
             
 workflows:
-  version:   2.1
+  # version:   2.1
   default:
     jobs:
       - lint_check
       - build_docker_app:
           requires: [lint_check]
+      - eks_cluster_deploy:
+          requires: [build_docker_app]
       
