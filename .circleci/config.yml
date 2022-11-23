@@ -123,6 +123,18 @@ jobs:
             mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
             echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
             kubectl version --short --client
+      - run:
+          name: Creating an EKS cluster.
+          command: |
+            aws cloudformation list-exports > cluster.txt
+            cat cluster.txt
+            if [ $(grep -i "$EKSCLUSTER_NAME" cluster.txt | wc -l) -ge 1 ]
+              then
+              echo "already EKS Cluster exists in environment"
+              else
+              echo "creating the EKS Cluster"
+              eksctl create cluster --name $EKS_CLUSTER_NAME --version 1.19 --region $AWS_DEFAULT_REGION --zones us-east-1a,us-east-1b,us-east-1c --nodegroup-name eks_capstone_grp --node-type t2.micro --nodes-min 2 --nodes-max 4 --managed
+            fi
 
             
 workflows:
@@ -130,8 +142,8 @@ workflows:
   default:
     jobs:
       - lint_check
-      # - build_docker_app:
-      #     requires: [lint_check]
+      - build_docker_app:
+          requires: [lint_check]
       - eks_cluster_deploy
-          # requires: [build_docker_app]
+          requires: [build_docker_app]
       
