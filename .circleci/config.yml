@@ -77,7 +77,7 @@ jobs:
             docker tag $image_ids $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_VERSION
             docker push $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_VERSION
             docker images
-eks_cluster_deploy:
+  eks_cluster_deploy:
     docker:
       - image: python:3.7.3-stretch
       
