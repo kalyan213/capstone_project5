@@ -91,9 +91,20 @@ jobs:
       - run:
           name: Install aws-iam-authenticator
           command: |
-            curl -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.21.2/2021-07-05/bin/linux/amd64/aws-iam-authenticator
+            # curl -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.21.2/2021-07-05/bin/linux/amd64/aws-iam-authenticator
+            curl -Lo aws-iam-authenticator https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/download/v0.5.9/aws-iam-authenticator_0.5.9_linux_amd64
             chmod +x ./aws-iam-authenticator
             mv ./aws-iam-authenticator /usr/local/bin/aws-iam-authenticator
+            mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
+            echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
+            aws-iam-authenticator help
+
+      
+      - run:
+          name: Install eksctl
+          command: |
+            curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+            mv /tmp/eksctl /usr/local/bin
 
       - run:
           name: Install kubectl
@@ -103,10 +114,17 @@ jobs:
             mv ./kubectl /usr/local/bin/kubectl
 
       - run:
-          name: Install eksctl
+          name: Create a EKS cluster
           command: |
-            curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
-            mv /tmp/eksctl /usr/local/bin
+            aws cloudformation list-exports > cluster.txt
+            cat cluster.txt
+            if [ $(grep -i "eksctl-udaproject5" cluster.txt | wc -l) -ge 1 ]
+              then
+              echo "already EKS Cluster exists in environment"
+              else
+              echo "creating the EKS Cluster"
+              eksctl create cluster --name $EKSCLUSTER_NAME --version 1.19 --region $AWS_DEFAULT_REGION --zones us-east-1a,us-east-1b,us-east-1c --nodegroup-name eksudanodegrp --node-type t2.micro --nodes-min 2 --nodes-max 4 --managed
+            fi
 
     
             
@@ -115,8 +133,8 @@ workflows:
   default:
     jobs:
       - lint_check
-      - build_docker_app:
-          requires: [lint_check]
-      - eks_cluster_deploy:
-          requires: [build_docker_app]
+      # - build_docker_app:
+      #     requires: [lint_check]
+      - eks_cluster_deploy
+          # requires: [build_docker_app]
       
