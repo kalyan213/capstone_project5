@@ -132,7 +132,7 @@ jobs:
               then
               echo "already EKS Cluster exists in environment"
               echo "deleting the EKS cluster..."
-              eksctl delete cluster --name prod
+              eksctl delete cluster --name $EKS_CLUSTER_NAME
               aws eks list-clusters
               else
               echo "creating the EKS Cluster"
