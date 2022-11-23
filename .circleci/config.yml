@@ -118,5 +118,5 @@ workflows:
       - build_docker_app:
           requires: [lint_check]
       - eks_cluster_deploy:
-          requires: [build_docker_app]
+            requires: [build_docker_app]
       
