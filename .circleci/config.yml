@@ -58,7 +58,7 @@ jobs:
           command: |
             docker system prune -af
             sleep 5
-            docker build -t $IMAGE_NAME:v1 .
+            docker build -t $IMAGE_NAME:$IMAGE_VERSION .
             sleep 5
       - run:
           name: List Docker Image
@@ -70,12 +70,12 @@ jobs:
             docker images
             sudo docker logout
             docker images
-            docker login -u kalyan212 -p dckr_pat_WnPrlq3yfXmH1b0U_xTpno7vGD4 docker.io
+            docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD docker.io
             image_ids=`docker images | grep $IMAGE_NAME | awk '{print $3}'`
             echo $image_ids
             docker images
-            docker tag $image_ids kalyan212/$IMAGE_NAME:v1
-            docker push kalyan212/$IMAGE_NAME:v1
+            docker tag $image_ids $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_VERSION
+            docker push $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_VERSION
             docker images
             
 workflows:
