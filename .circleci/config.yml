@@ -77,6 +77,38 @@ jobs:
             docker tag $image_ids $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_VERSION
             docker push $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_VERSION
             docker images
+eks_cluster_deploy:
+    docker:
+      - image: python:3.7.3-stretch
+      
+    steps:
+      - checkout
+      - run:
+          name: Install awscli
+          command: |
+            pip3 install awscli
+
+      - run:
+          name: Install aws-iam-authenticator
+          command: |
+            curl -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.21.2/2021-07-05/bin/linux/amd64/aws-iam-authenticator
+            chmod +x ./aws-iam-authenticator
+            mv ./aws-iam-authenticator /usr/local/bin/aws-iam-authenticator
+
+      - run:
+          name: Install kubectl
+          command: |
+            curl -o kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.13.7/2019-06-11/bin/linux/amd64/kubectl
+            chmod +x ./kubectl
+            mv ./kubectl /usr/local/bin/kubectl
+
+      - run:
+          name: Install eksctl
+          command: |
+            curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+            mv /tmp/eksctl /usr/local/bin
+
+    
             
 workflows:
   version:   2.1
@@ -85,4 +117,6 @@ workflows:
       - lint_check
       - build_docker_app:
           requires: [lint_check]
+      - eks_cluster_deploy:
+          requires: [build_docker_app]
       
