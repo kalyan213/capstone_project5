@@ -56,8 +56,12 @@ jobs:
       - run:
           name: Build Docker Image
           command: |
+            echo "$IMAGE_NAME"
+            echo "$IMAGE_VERSION"
             echo "$IMAGE_NAME:$IMAGE_VERSION";
-            docker build -t $IMAGE_NAME:$IMAGE_VERSION .
+            # docker build -t $IMAGE_NAME:$IMAGE_VERSION .
+            docker system prune -af
+            docker build -t hello:v1 .
       - run:
           name: List Docker Image
           command: |
@@ -65,14 +69,22 @@ jobs:
       - run:
           name: Push Docker Image
           command: |
-            docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PASS"
-            echo "$DOCKERHUB_USERNAME"-------"$DOCKERHUB_PASS"
-            docker image ls
-            dockerpath=$IMAGE_NAME:$IMAGE_VERSION
-            echo "$dockerpath"
-            docker push $dockerpath
-            
-            
+            # echo "$DOCKERHUB_USERNAME"-------"$DOCKERHUB_PASS"
+            # docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PASS"
+            # docker image ls
+            # dockerpath=$IMAGE_NAME:$IMAGE_VERSION
+            # echo "$dockerpath"
+            # docker push $dockerpath
+
+            docker images
+            sudo docker logout
+            docker images
+            sudo docker login -u kalyan212 -p dckr_pat_WnPrlq3yfXmH1b0U_xTpno7vGD4 docker.io
+            image_ids=`docker images | grep hello | awk '{print $3}'`
+            echo $image_ids
+            docker images
+            docker tag $image_ids kalyan212/hello:v1
+            docker push kalyan212/hello:v1
             
 workflows:
   version:   2.1
