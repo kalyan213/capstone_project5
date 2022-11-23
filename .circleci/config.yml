@@ -68,7 +68,7 @@ jobs:
             docker images
             sudo docker logout
             docker images
-            sudo docker login -u kalyan212 -p dckr_pat_WnPrlq3yfXmH1b0U_xTpno7vGD4 docker.io
+            sudo docker login -u kalyan212 -p Guna@123Guna@123 docker.io
             image_ids=`docker images | grep hello | awk '{print $3}'`
             echo $image_ids
             docker images
