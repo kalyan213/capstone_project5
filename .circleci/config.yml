@@ -148,8 +148,52 @@ jobs:
                 
                 /usr/local/bin/eksctl create cluster --config-file=cap_cluster.yml
             fi
+  eks_app_deploy:
+    docker:
+      - image: python:3.7.3-stretch
+      
+    steps:
+      - checkout
+      - run:
+          name: Install awscli
+          command: |
+            pip3 install awscli
 
-            
+      - run:
+          name: Install aws-iam-authenticator
+          command: |
+            # curl -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.21.2/2021-07-05/bin/linux/amd64/aws-iam-authenticator
+            curl -Lo aws-iam-authenticator https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/download/v0.5.9/aws-iam-authenticator_0.5.9_linux_amd64
+            chmod +x ./aws-iam-authenticator
+            mv ./aws-iam-authenticator /usr/local/bin/aws-iam-authenticator
+            mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
+            echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
+            aws-iam-authenticator help
+
+      
+      - run:
+          name: Install eksctl
+          command: |
+            # curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+            # mv /tmp/eksctl /usr/local/bin
+            curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+            mv /tmp/eksctl /usr/local/bin
+            eksctl version
+
+
+      - run:
+          name: Install kubectl
+          command: |
+            # curl -o kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.13.7/2019-06-11/bin/linux/amd64/kubectl
+            # chmod +x ./kubectl
+            # mv ./kubectl /usr/local/bin/kubectl
+            curl -o kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.24.7/2022-10-31/bin/linux/amd64/kubectl
+            curl -o kubectl.sha256 https://s3.us-west-2.amazonaws.com/amazon-eks/1.24.7/2022-10-31/bin/linux/amd64/kubectl.sha256
+            openssl sha1 -sha256 kubectl
+            chmod +x ./kubectl
+            mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
+            echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
+            kubectl version --short --client
 workflows:
   version:   2.1
   default:
@@ -159,4 +203,7 @@ workflows:
           requires: [lint_check]
       - eks_cluster_deploy:
           requires: [build_docker_app]
+          
+      - eks_app_deploy:
+          requires: [eks_cluster_deploy]
       
