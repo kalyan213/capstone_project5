@@ -184,26 +184,25 @@ jobs:
       - run:
           name: Install kubectl
           command: |
-            # curl -o kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.13.7/2019-06-11/bin/linux/amd64/kubectl
-            # chmod +x ./kubectl
-            # mv ./kubectl /usr/local/bin/kubectl
-            curl -o kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.24.7/2022-10-31/bin/linux/amd64/kubectl
-            curl -o kubectl.sha256 https://s3.us-west-2.amazonaws.com/amazon-eks/1.24.7/2022-10-31/bin/linux/amd64/kubectl.sha256
-            openssl sha1 -sha256 kubectl
+            curl -o kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.13.7/2019-06-11/bin/linux/amd64/kubectl
             chmod +x ./kubectl
-            mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
-            echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
-            kubectl version --short --client
+            mv ./kubectl /usr/local/bin/kubectl
+            # curl -o kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.24.7/2022-10-31/bin/linux/amd64/kubectl
+            # curl -o kubectl.sha256 https://s3.us-west-2.amazonaws.com/amazon-eks/1.24.7/2022-10-31/bin/linux/amd64/kubectl.sha256
+            # openssl sha1 -sha256 kubectl
+            # chmod +x ./kubectl
+            # mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
+            # echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
+            # kubectl version --short --client
 workflows:
   version:   2.1
   default:
     jobs:
       - lint_check
-      - build_docker_app:
-          requires: [lint_check]
-      - eks_cluster_deploy:
-          requires: [build_docker_app]
+      # - build_docker_app:
+      #     requires: [lint_check]
+      # - eks_cluster_deploy:
+      #     requires: [build_docker_app]
           
-      - eks_app_deploy:
-          requires: [eks_cluster_deploy]
+      - eks_app_deploy
       
