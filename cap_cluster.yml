@@ -2,7 +2,7 @@ apiVersion: eksctl.io/v1alpha5
 kind: ClusterConfig
 
 metadata:
-  name: capstone_cluster
+  name: capstonecluster
   region: us-west-2
 iam:
   withOIDC: true
