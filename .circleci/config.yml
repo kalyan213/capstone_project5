@@ -147,7 +147,6 @@ jobs:
             aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
             aws configure set default.region $AWS_DEFAULT_REGION
             aws cloudformation list-exports > cluster.txt
-            aws eks update-kubeconfig --region $AWS_DEFAULT_REGION --name $EKS_CLUSTER_NAME
             if kubectl config get-clusters | grep -q ${EKS_CLUSTER_NAME}; then
                 echo
                 echo "Cluster '${EKS_CLUSTER_NAME}' already exists!"
@@ -236,4 +235,4 @@ workflows:
       - eks_cluster_deploy:
           requires: [build_docker_app]
       - eks_app_deploy:
-          requires: [build_docker_app]
+          requires: [eks_cluster_deploy]
