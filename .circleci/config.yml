@@ -95,9 +95,10 @@ jobs:
             curl -Lo aws-iam-authenticator https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/download/v0.5.9/aws-iam-authenticator_0.5.9_linux_amd64
             chmod +x ./aws-iam-authenticator
             mv ./aws-iam-authenticator /usr/local/bin/aws-iam-authenticator
-            mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
-            echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
-            aws-iam-authenticator help
+            # mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
+            # echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
+            # aws-iam-authenticator help
+            
 
       
       - run:
@@ -116,13 +117,16 @@ jobs:
             # curl -o kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.13.7/2019-06-11/bin/linux/amd64/kubectl
             # chmod +x ./kubectl
             # mv ./kubectl /usr/local/bin/kubectl
-            curl -o kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.24.7/2022-10-31/bin/linux/amd64/kubectl
-            curl -o kubectl.sha256 https://s3.us-west-2.amazonaws.com/amazon-eks/1.24.7/2022-10-31/bin/linux/amd64/kubectl.sha256
-            openssl sha1 -sha256 kubectl
+            # curl -o kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.24.7/2022-10-31/bin/linux/amd64/kubectl
+            # curl -o kubectl.sha256 https://s3.us-west-2.amazonaws.com/amazon-eks/1.24.7/2022-10-31/bin/linux/amd64/kubectl.sha256
+            # openssl sha1 -sha256 kubectl
+            # chmod +x ./kubectl
+            # mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
+            # echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
+            # kubectl version --short --client
+            curl -o kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.13.7/2019-06-11/bin/linux/amd64/kubectl
             chmod +x ./kubectl
-            mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
-            echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
-            kubectl version --short --client
+            mv ./kubectl /usr/local/bin/kubectl
       - run:
           name: Creating an EKS cluster.
           command: |
@@ -138,6 +142,12 @@ jobs:
             #   eksctl create cluster --name $EKS_CLUSTER_NAME --version 1.20 --region $AWS_DEFAULT_REGION --zones us-east-1a,us-east-1b,us-east-1c --nodegroup-name eks_capstone_grp --node-type t2.micro --nodes-min 2 --nodes-max 4 --managed
             #   aws eks list-clusters            
             # fi
+            export TERM=xterm
+            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+            aws configure set default.region $AWS_DEFAULT_REGION
+            aws cloudformation list-exports > cluster.txt
+            aws eks update-kubeconfig --region $AWS_DEFAULT_REGION --name $EKS_CLUSTER_NAME
             if kubectl config get-clusters | grep -q ${EKS_CLUSTER_NAME}; then
                 echo
                 echo "Cluster '${EKS_CLUSTER_NAME}' already exists!"
@@ -146,7 +156,7 @@ jobs:
                 echo
                 echo "Creating cluster..."
                 
-                /usr/local/bin/eksctl create cluster --config-file=cap_cluster.yml
+                eksctl create cluster --name $EKS_CLUSTER_NAME --version 1.21 --region $AWS_DEFAULT_REGION --zones us-east-1a,us-east-1b,us-east-1c --nodegroup-name $EKS_CLUSTER_NAMEgroups --node-type t2.micro --nodes-min 2 --nodes-max 4 --managed
             fi
   eks_app_deploy:
     docker:
@@ -166,9 +176,9 @@ jobs:
             curl -Lo aws-iam-authenticator https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/download/v0.5.9/aws-iam-authenticator_0.5.9_linux_amd64
             chmod +x ./aws-iam-authenticator
             mv ./aws-iam-authenticator /usr/local/bin/aws-iam-authenticator
-            mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
-            echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
-            aws-iam-authenticator help
+            # mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
+            # echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
+            # aws-iam-authenticator help
 
       
       - run:
@@ -184,9 +194,9 @@ jobs:
       - run:
           name: Install kubectl
           command: |
-            curl -o kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.13.7/2019-06-11/bin/linux/amd64/kubectl
-            chmod +x ./kubectl
-            mv ./kubectl /usr/local/bin/kubectl
+            # curl -o kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.13.7/2019-06-11/bin/linux/amd64/kubectl
+            # chmod +x ./kubectl
+            # mv ./kubectl /usr/local/bin/kubectl
             # curl -o kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.24.7/2022-10-31/bin/linux/amd64/kubectl
             # curl -o kubectl.sha256 https://s3.us-west-2.amazonaws.com/amazon-eks/1.24.7/2022-10-31/bin/linux/amd64/kubectl.sha256
             # openssl sha1 -sha256 kubectl
@@ -194,15 +204,36 @@ jobs:
             # mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
             # echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
             # kubectl version --short --client
+            curl -o kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.13.7/2019-06-11/bin/linux/amd64/kubectl
+            chmod +x ./kubectl
+            mv ./kubectl /usr/local/bin/kubectl
+            
+      - run:
+          name: deploy the docker container in aws eks cluster
+          command: |
+            export TERM=xterm
+            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+            aws configure set default.region $AWS_DEFAULT_REGION
+            aws cloudformation list-exports > cluster.txt
+            aws eks update-kubeconfig --region $AWS_DEFAULT_REGION --name $EKS_CLUSTER_NAME
+            kubectl apply -f eks_app_deploy.yml
+            kubectl get nodes
+            kubectl get deployment
+            kubectl get pod -o wide
+            kubectl apply -f eks-appservices.yml
+            kubectl get services
+            kubectl rollout status deployments/cpastonecluster
+            kubectl describe svc cpastonecluster
+            
 workflows:
   version:   2.1
   default:
     jobs:
       - lint_check
-      # - build_docker_app:
-      #     requires: [lint_check]
-      # - eks_cluster_deploy:
-      #     requires: [build_docker_app]
-          
-      - eks_app_deploy
-      
+      - build_docker_app:
+          requires: [lint_check]
+      - eks_cluster_deploy:
+          requires: [build_docker_app]
+      - eks_app_deploy:
+          requires: [build_docker_app]

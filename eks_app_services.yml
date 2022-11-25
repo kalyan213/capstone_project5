@@ -1,0 +1,12 @@
+# Create Load balancer
+apiVersion: v1
+kind: Service
+metadata:
+  name: capstonecluster
+spec:
+  selector:
+    app: capstonecluster
+  ports:
+    - port: 5000
+      targetPort: 5000
+  type: LoadBalancer
