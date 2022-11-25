@@ -220,10 +220,10 @@ jobs:
             kubectl get nodes
             kubectl get deployment
             kubectl get pod -o wide
-            kubectl apply -f eks-appservices.yml
+            kubectl apply -f eks_app_services.yml
             kubectl get services
-            kubectl rollout status deployments/cpastonecluster
-            kubectl describe svc cpastonecluster
+            kubectl rollout status deployments/capstonecluster
+            kubectl describe svc capstonecluster
             
 workflows:
   version:   2.1
