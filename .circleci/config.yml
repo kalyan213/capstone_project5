@@ -155,7 +155,7 @@ jobs:
                 echo
                 echo "Creating cluster..."
                 
-                eksctl create cluster --name $EKS_CLUSTER_NAME --version 1.21 --region $AWS_DEFAULT_REGION --zones us-east-1a,us-east-1b,us-east-1c --nodegroup-name $EKS_CLUSTER_NAMEgroups --node-type t2.micro --nodes-min 2 --nodes-max 4 --managed
+                eksctl create cluster --name $EKS_CLUSTER_NAME --version 1.21 --region $AWS_DEFAULT_REGION --zones us-east-1a,us-east-1b,us-east-1c --nodegroup-name capstoneclusternodesgrp --node-type t2.micro --nodes-min 2 --nodes-max 4 --managed
             fi
   eks_app_deploy:
     docker:
