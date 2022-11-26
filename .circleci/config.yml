@@ -28,8 +28,6 @@ jobs:
             python3 -m venv devops
             . devops/bin/activate
             make install
-            wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v2.10.0/hadolint-Linux-x86_64
-            chmod +x /bin/hadolint
             
       - save_cache:
           paths:
@@ -45,7 +43,7 @@ jobs:
   # building the docker app
   build_docker_app:
     environment:
-      IMAGE_VERSION:  v1
+      IMAGE_VERSION:  v2
     docker:
       - image: circleci/golang:1.15
      
@@ -71,13 +69,14 @@ jobs:
             docker images
             sudo docker logout
             docker images
-            docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD docker.io
+            docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PASSWORD"
             image_ids=`docker images | grep $IMAGE_NAME | awk '{print $3}'`
             echo $image_ids
             docker images
             docker tag $image_ids $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_VERSION
             docker push $DOCKERHUB_USERNAME/$IMAGE_NAME:$IMAGE_VERSION
             docker images
+            
   eks_cluster_deploy:
     docker:
       - image: python:3.7.3-stretch
@@ -236,7 +235,7 @@ jobs:
             kubectl get services
             echo "perform deployment rollback"
             kubectl rollout status deployment/ekscpattonecluster
-            # kubectl describe svc capstonecluster
+            kubectl describe svc ekscpattonecluster
             
 workflows:
   version:   2.1
