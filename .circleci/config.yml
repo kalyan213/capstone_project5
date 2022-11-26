@@ -235,7 +235,7 @@ jobs:
             echo "now get the services"
             kubectl get services
             echo "perform deployment rollback"
-            kubectl rollout status deployments/ekscpattonecluster
+            kubectl rollout status deployment/ekscpattonecluster
             # kubectl describe svc capstonecluster
             
 workflows:
