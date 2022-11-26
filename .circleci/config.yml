@@ -247,4 +247,4 @@ workflows:
       - eks_cluster_deploy:
           requires: [build_docker_app]
       - eks_app_deploy:
-          requires: []eks_cluster_deploy]
+          requires: [eks_cluster_deploy]
