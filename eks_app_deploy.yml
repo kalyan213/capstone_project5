@@ -1,12 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: capstonecluster
+  name: capstone
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: capstonecluster
+      app: capstone
   strategy:
     rollingUpdate:
       maxUnavailable: 1
@@ -14,11 +14,11 @@ spec:
   template:
     metadata:
       labels:
-        app: capstonecluster
+        app: capstone
     spec:
       containers:
-      - name: capstonecluster
-        image: kalyan212/capstonecluster:v2
+      - name: capstone
+        image: kalyan212/capstone:v2
         imagePullPolicy: Always
         ports:
         - containerPort: 5000

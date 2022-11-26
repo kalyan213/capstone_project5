@@ -2,20 +2,22 @@ FROM python:3.7.3-stretch
 
 ## Step 1:
 # Create a working directory
-WORKDIR /app
+WORKDIR /application
 
 ## Step 2:
 # Copy source code to working directory
-COPY . app.py /app/
+COPY . app.py /application/
 
 ## Step 3:
 # Install packages from requirements.txt
 # hadolint ignore=DL3013
 RUN pip install --upgrade --no-cache-dir pip &&\
     pip install --no-cache-dir --trusted-host pypi.python.org -r requirements.txt
+    wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v2.10.0/hadolint-Linux-x86_64
+	chmod +x /bin/hadolint
 
 ## Step 4:
-# Expose port 8080
+# Expose port 80
 EXPOSE 8080
 
 ## Step 5:

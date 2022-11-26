@@ -2,10 +2,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: capstonecluster
+  name: capstone
 spec:
   selector:
-    app: capstonecluster
+    app: capstone
   ports:
     - port: 5000
       targetPort: 5000
