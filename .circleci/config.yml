@@ -234,7 +234,8 @@ jobs:
             echo "applying finished of app services"
             echo "now get the services"
             kubectl get services
-            # kubectl rollout status deployments/capstonecluster
+            echo "perform deployment rollback"
+            kubectl rollout status deployments/ekscpattonecluster
             # kubectl describe svc capstonecluster
             
 workflows:
