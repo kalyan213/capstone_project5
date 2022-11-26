@@ -229,7 +229,8 @@ jobs:
             kubectl get deployment
             echo "get pod details with wide option"
             kubectl get pod -o wide
-            # kubectl apply -f eks_app_services.yml
+            echo "Echo ide output completed now applying the status app services config"
+            kubectl apply -f eks_app_services.yml
             # kubectl get services
             # kubectl rollout status deployments/capstonecluster
             # kubectl describe svc capstonecluster
