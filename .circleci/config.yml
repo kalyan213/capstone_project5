@@ -227,7 +227,8 @@ jobs:
             echo "Get deployment details"
             
             kubectl get deployment
-            # kubectl get pod -o wide
+            echo "get pod details with wide option"
+            kubectl get pod -o wide
             # kubectl apply -f eks_app_services.yml
             # kubectl get services
             # kubectl rollout status deployments/capstonecluster
