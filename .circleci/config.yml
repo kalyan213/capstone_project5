@@ -215,25 +215,29 @@ jobs:
             aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
             aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
             aws configure set default.region $AWS_DEFAULT_REGION
+            echo "Key Loaded Successfully"
             aws cloudformation list-exports > cluster.txt
+            cat cluster.txt
             aws eks update-kubeconfig --region $AWS_DEFAULT_REGION --name $EKS_CLUSTER_NAME
+            echo "eks key load successfull"
+            echo "started app deploy...."
             kubectl apply -f eks_app_deploy.yml
+            echo "get node details"
             kubectl get nodes
-            kubectl get deployment
-            kubectl get pod -o wide
-            kubectl apply -f eks_app_services.yml
-            kubectl get services
-            kubectl rollout status deployments/capstonecluster
-            kubectl describe svc capstonecluster
+            # kubectl get deployment
+            # kubectl get pod -o wide
+            # kubectl apply -f eks_app_services.yml
+            # kubectl get services
+            # kubectl rollout status deployments/capstonecluster
+            # kubectl describe svc capstonecluster
             
 workflows:
   version:   2.1
   default:
     jobs:
       - lint_check
-      - build_docker_app:
-          requires: [lint_check]
-      - eks_cluster_deploy:
-          requires: [build_docker_app]
-      - eks_app_deploy:
-          requires: [eks_cluster_deploy]
+      # - build_docker_app:
+      #     requires: [lint_check]
+      # - eks_cluster_deploy:
+      #     requires: [build_docker_app]
+      - eks_app_deploy
